@@ -7,15 +7,6 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="HTML5" title="HTML5" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" />&nbsp;&nbsp;
   <img alt="CSS3" title="CSS3" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" />&nbsp;&nbsp;
   <img alt="JavaScript" title="JavaScript" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" />&nbsp;&nbsp;
-  <img alt="Chrome" title="Chrome / File System Access API" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" />&nbsp;&nbsp;
-  <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Single--File-App-111827?style=for-the-badge" alt="Single File App" />
-  <img src="https://img.shields.io/badge/Local--First-166534?style=for-the-badge" alt="Local First" />
-  <img src="https://img.shields.io/badge/JSON%20%2B%20CSV-Export-1d4ed8?style=for-the-badge" alt="JSON and CSV Export" />
-  <img src="https://img.shields.io/badge/No%20Backend-Required-6d28d9?style=for-the-badge" alt="No Backend Required" />
 </p>
 
 ---

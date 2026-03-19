@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zeiterfassung</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f11;--sur:#16181c;--sur2:#1e2128;--brd:#2a2d36;--acc:#f5c842;--grn:#3de3a0;--red:#f05050;--txt:#e8eaf0;--mut:#6b7080;--mut2:#9aa0b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh;}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:54px;border-bottom:1px solid var(--brd);background:var(--sur);position:sticky;top:0;z-index:200;}
+.logo{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);}
+.logo span{color:var(--mut);font-weight:300;}
+.hright{display:flex;align-items:center;gap:14px;}
+.hclock{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--mut);}
+.hdot{width:8px;height:8px;border-radius:50%;background:var(--mut);transition:background .3s;}
+.hdot.on{background:var(--grn);animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(61,227,160,.2)}50%{box-shadow:0 0 0 7px rgba(61,227,160,.05)}}
+
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 54px);}
+
+/* SIDEBAR */
+.sidebar{border-right:1px solid var(--brd);background:var(--sur);padding:16px 0;display:flex;flex-direction:column;gap:0;}
+.sb-ttl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);padding:0 20px;margin-bottom:8px;}
+.plist{display:flex;flex-direction:column;gap:2px;padding:0 10px;}
+.pitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:5px;cursor:pointer;border:1px solid transparent;transition:background .15s;}
+.pitem:hover{background:var(--sur2);}
+.pitem.sel{background:var(--sur2);border-color:var(--brd);}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.pname{flex:1;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.phrs{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut);}
+.new-p{margin:10px 18px 0;padding:9px;background:transparent;border:1px dashed var(--brd);border-radius:4px;color:var(--mut);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;text-align:left;}
+.new-p:hover{border-color:var(--acc);color:var(--acc);}
+.sbdiv{height:1px;background:var(--brd);margin:14px 0;}
+.sbact{padding:0 16px;display:flex;flex-direction:column;gap:6px;}
+
+/* MAIN */
+.main{padding:22px;overflow-y:auto;}
+
+/* TIMER CARD */
+.tcard{background:var(--sur);border:1px solid var(--brd);border-radius:6px;padding:20px 22px;margin-bottom:18px;}
+.tcard-top{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;margin-bottom:14px;}
+.tfields{display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:12px;}
+label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);display:block;margin-bottom:5px;}
+input[type=text],input[type=date],select{background:var(--sur2);border:1px solid var(--brd);color:var(--txt);font-family:'IBM Plex Sans',sans-serif;font-size:14px;padding:9px 12px;border-radius:3px;outline:none;width:100%;transition:border-color .15s;}
+input:focus,select:focus{border-color:var(--acc);}
+select option{background:var(--sur2);}
+.psel-wrap{position:relative;}
+.psel-dot{width:10px;height:10px;border-radius:50%;position:absolute;right:34px;top:50%;transform:translateY(-50%);pointer-events:none;}
+.elapsed-wrap{text-align:right;}
+.elbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:4px;}
+#elapsed{font-family:'IBM Plex Mono',monospace;font-size:50px;font-weight:300;letter-spacing:-.02em;line-height:1;color:var(--txt);transition:color .3s;}
+#elapsed.on{color:var(--grn);}
+.tbtns{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.stxt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut);margin-left:6px;}
+
+/* BUTTONS */
+.btn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;padding:9px 16px;border:1px solid transparent;border-radius:3px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn-acc{background:var(--acc);color:#000;}
+.btn-acc:hover{background:#ffd755;}
+.btn-pause{background:transparent;color:var(--mut2);border-color:var(--mut2);}
+.btn-pause:hover{color:var(--txt);border-color:var(--txt);}
+.btn-save{background:var(--grn);color:#000;}
+.btn-save:hover{background:#5fffc0;}
+.btn-dsc{background:transparent;color:var(--red);border-color:var(--brd);}
+.btn-dsc:hover{border-color:var(--red);}
+.btn-ghost{background:transparent;color:var(--mut);border-color:var(--brd);}
+.btn-ghost:hover{border-color:var(--mut2);color:var(--txt);}
+.btn-danger{background:transparent;color:var(--red);border-color:var(--brd);}
+.btn-danger:hover{border-color:var(--red);}
+.btn:disabled{opacity:.28;cursor:not-allowed;pointer-events:none;}
+.btn-sm{padding:5px 12px;font-size:10px;}
+
+/* SUMMARY */
+.sstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--brd);border:1px solid var(--brd);border-radius:6px;overflow:hidden;margin-bottom:18px;}
+.sc{background:var(--sur);padding:13px 16px;}
+.sclbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:5px;}
+.scval{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:500;}
+.scval.acc{color:var(--acc);}
+.scval.grn{color:var(--grn);}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--brd);margin-bottom:18px;}
+.tab{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:9px 18px;cursor:pointer;color:var(--mut);border-bottom:2px solid transparent;transition:all .15s;}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);}
+.tpanel{display:none;}
+.tpanel.on{display:block;}
+
+/* PROJECT DETAIL */
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.ptitle{font-size:20px;font-weight:600;}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.pstat{background:var(--sur);border:1px solid var(--brd);border-radius:5px;padding:13px 16px;}
+.pstlbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:5px;}
+.pstval{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;}
+.pstsub{font-size:11px;color:var(--mut);margin-top:3px;}
+
+/* TABLE */
+.twrap{background:var(--sur);border:1px solid var(--brd);border-radius:5px;overflow:hidden;}
+.thdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--brd);}
+.thdrtxt{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);text-align:left;padding:8px 14px;font-weight:400;border-bottom:1px solid var(--brd);}
+td{padding:10px 14px;border-bottom:1px solid var(--brd);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--sur2);}
+.tmono{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut2);}
+.tdur{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--acc);font-weight:500;}
+.dayhdr td{background:var(--sur2);}
+.dayhdr-lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut2);font-weight:500;}
+.daysum{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--grn);font-weight:500;}
+.daymt{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut);margin-left:8px;}
+.delbtn{background:none;border:none;color:var(--mut);cursor:pointer;font-size:17px;padding:0 3px;transition:color .15s;line-height:1;}
+.delbtn:hover{color:var(--red);}
+.empty{text-align:center;padding:44px;color:var(--mut);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;}
+
+/* MANUAL */
+.mform{background:var(--sur);border:1px solid var(--brd);border-radius:5px;padding:16px 20px;margin-bottom:18px;display:none;}
+.mform.open{display:block;}
+.mftitle{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:12px;}
+.mfgrid{display:grid;grid-template-columns:200px 1fr 130px 130px auto;gap:10px;align-items:end;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--sur);border:1px solid var(--brd);border-radius:6px;padding:26px;width:400px;max-width:95vw;}
+.modttl{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:18px;}
+.modfields{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+.cpick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.copt{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s;}
+.copt:hover{transform:scale(1.15);}
+.copt.on{border-color:#fff;transform:scale(1.15);}
+.modbtns{display:flex;gap:10px;justify-content:flex-end;}
+
+/* FILE STATUS */
+.fstatus{padding:0 16px;margin-top:4px;}
+.fstatus-inner{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sur2);border:1px solid var(--brd);border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--mut);transition:all .3s;}
+.fstatus-inner.connected{border-color:var(--grn);color:var(--grn);}
+.fstatus-inner.saving{border-color:var(--acc);color:var(--acc);}
+.fstatus-dot{width:7px;height:7px;border-radius:50%;background:var(--mut);flex-shrink:0;transition:background .3s;}
+.fstatus-inner.connected .fstatus-dot{background:var(--grn);}
+.fstatus-inner.saving .fstatus-dot{background:var(--acc);}
+.fstatus-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.btn-file{background:transparent;color:var(--grn);border-color:var(--grn);}
+.btn-file:hover{background:rgba(61,227,160,.08);color:#5fffc0;border-color:#5fffc0;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--sur2);border:1px solid var(--grn);color:var(--grn);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:9px 20px;border-radius:3px;opacity:0;transition:all .25s;pointer-events:none;z-index:500;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{border-right:none;border-bottom:1px solid var(--brd);}
+  .plist{flex-direction:row;flex-wrap:wrap;}
+  .tcard-top,.tfields{grid-template-columns:1fr;}
+  #elapsed{font-size:36px;}
+  .sstrip{grid-template-columns:repeat(2,1fr);}
+  .pstats{grid-template-columns:1fr 1fr;}
+  .mfgrid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Zeit<span>erfassung</span></div>
+  <div class="hright">
+    <div class="hdot" id="hdot"></div>
+    <div class="hclock" id="hclock">--:--:--</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-ttl">Projekte</div>
+    <div class="plist" id="plist"></div>
+    <button class="new-p" onclick="openNewProj()">+ Neues Projekt</button>
+    <div class="sbdiv"></div>
+    <div class="sbact">
+      <button class="btn btn-file btn-sm" id="btn-connect" onclick="connectFile()">&#128193; Datei verbinden</button>
+      <div class="fstatus" id="fstatus" style="display:none">
+        <div class="fstatus-inner" id="fstatus-inner">
+          <div class="fstatus-dot"></div>
+          <div class="fstatus-name" id="fstatus-name">—</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()">&#128190; Backup speichern</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('json-import').click()">&#128194; Backup laden</button>
+      <input type="file" id="json-import" accept=".json" style="display:none" onchange="importJSON(event)" />
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">&#8595; CSV Export</button>
+      <button class="btn btn-ghost btn-sm" onclick="showTab('log')">&#9776; Alle Einträge</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- TIMER CARD -->
+    <div class="tcard">
+      <div class="tcard-top">
+        <div>
+          <div class="tfields">
+            <div>
+              <label>Beschreibung / Tätigkeit</label>
+              <input type="text" id="tdesc" placeholder="Woran arbeitest du?" />
+            </div>
+            <div>
+              <label>Datum</label>
+              <input type="date" id="tdate" />
+            </div>
+          </div>
+          <div>
+            <label>Projekt</label>
+            <div class="psel-wrap">
+              <select id="tproj" onchange="onProjChange()"></select>
+              <div class="psel-dot" id="pseldot"></div>
+            </div>
+          </div>
+        </div>
+        <div class="elapsed-wrap">
+          <div class="elbl">Laufzeit</div>
+          <div id="elapsed">00:00:00</div>
+        </div>
+      </div>
+      <div class="tbtns">
+        <button class="btn btn-acc"   id="btn-start" onclick="timerStart()">&#9654; Starten</button>
+        <button class="btn btn-pause" id="btn-pause" onclick="timerPause()" disabled>&#9646;&#9646; Pause</button>
+        <button class="btn btn-save"  id="btn-save"  onclick="timerSave()"  disabled>&#10003; Speichern</button>
+        <button class="btn btn-dsc"   id="btn-disc"  onclick="timerDiscard()" disabled>&#215; Abbrechen</button>
+        <button class="btn btn-ghost" onclick="toggleManual()">+ Manuell</button>
+        <span class="stxt" id="stxt">Bereit</span>
+      </div>
+    </div>
+
+    <!-- MANUAL FORM -->
+    <div class="mform" id="mform">
+      <div class="mftitle">— Manuelle Eingabe</div>
+      <div class="mfgrid">
+        <div>
+          <label>Projekt</label>
+          <select id="mproj"></select>
+        </div>
+        <div>
+          <label>Beschreibung</label>
+          <input type="text" id="mdesc" placeholder="Tätigkeit" />
+        </div>
+        <div>
+          <label>Datum</label>
+          <input type="date" id="mdate" />
+        </div>
+        <div>
+          <label>Dauer (Std:Min)</label>
+          <input type="text" id="mdur" placeholder="z.B. 2:30" />
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn btn-save" onclick="manualSave()">Speichern</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="sstrip">
+      <div class="sc"><div class="sclbl">Heute</div><div class="scval acc" id="s-today">0:00</div></div>
+      <div class="sc"><div class="sclbl">Diese Woche</div><div class="scval" id="s-week">0:00</div></div>
+      <div class="sc"><div class="sclbl">Gesamt</div><div class="scval" id="s-all">0:00</div></div>
+      <div class="sc"><div class="sclbl">Einträge</div><div class="scval grn" id="s-cnt">0</div></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab on" id="tab-proj" onclick="showTab('proj')">Projektansicht</div>
+      <div class="tab"    id="tab-log"  onclick="showTab('log')">Alle Einträge</div>
+    </div>
+
+    <div class="tpanel on" id="panel-proj"><div id="projdetail"></div></div>
+    <div class="tpanel"    id="panel-log">
+      <div class="twrap">
+        <div class="thdr">
+          <div class="thdrtxt">Alle Einträge</div>
+          <input type="text" id="logfilter" placeholder="Suche…" oninput="renderLog()" style="width:150px;font-size:12px;padding:5px 10px"/>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Datum</th><th>Projekt</th><th>Beschreibung</th>
+            <th>Start</th><th>Ende</th><th>Dauer</th><th></th>
+          </tr></thead>
+          <tbody id="logbody"></tbody>
+        </table>
+        <div class="empty" id="logempty" style="display:none">Keine Einträge.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modttl" id="modttl">— Neues Projekt</div>
+    <div class="modfields">
+      <div><label>Projektname</label><input type="text" id="mod-name" placeholder="z.B. Acme GmbH" /></div>
+      <div><label>Stunden pro Manntag</label><input type="text" id="mod-hpd" value="8" /></div>
+      <div><label>Farbe</label><div class="cpick" id="cpick"></div></div>
+    </div>
+    <div class="modbtns">
+      <button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>
+      <button class="btn btn-acc" id="mod-save" onclick="saveProj()">Anlegen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const COLORS = ['#f5c842','#3de3a0','#5b8dee','#f05050','#b47cff','#ff9f40','#00c9ff','#f06292','#69db7c','#ff6b6b'];
+
+// App data
+let D = loadD();
+
+// Timer
+// state: 'idle' | 'running' | 'paused'
+let TM = {
+  state: 'idle',
+  projectId: null, // which project this session belongs to
+  segStart: 0,    // Date.getTime() when current segment started
+  firstStart: 0,  // Date.getTime() of very first start this session
+  accMs: 0,       // accumulated milliseconds from completed segments
+  iv: null        // setInterval handle
+};
+
+// UI
+let activeTab = 'proj';
+let editProjId = null;
+let chosenColor = COLORS[0];
+
+// File System Access API
+let fileHandle = null;
+let saveTimeout = null;
+
+// Hide connect button if API not available
+if (!window.showSaveFilePicker) {
+  document.getElementById('btn-connect').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════
+   PERSIST
+═══════════════════════════════════════════ */
+function loadD() {
+  try {
+    const r = JSON.parse(localStorage.getItem('zt4') || 'null');
+    if (r && r.projects && r.entries) return r;
+  } catch(e) {}
+  const p = { id: genId('p'), name: 'Mein Projekt', color: COLORS[0], hpd: 8 };
+  return { projects: [p], entries: [], sel: p.id };
+}
+
+function saveD() {
+  // Always save to localStorage as cache
+  localStorage.setItem('zt4', JSON.stringify(D));
+  // If file is connected, debounce-write to disk
+  if (fileHandle) {
+    clearTimeout(saveTimeout);
+    updateFileStatus('saving');
+    saveTimeout = setTimeout(function() { saveToFile(); }, 300);
+  }
+}
+
+async function saveToFile() {
+  if (!fileHandle) return;
+  try {
+    var writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(D, null, 2));
+    await writable.close();
+    updateFileStatus('saved');
+  } catch(e) {
+    console.error('Datei-Speichern fehlgeschlagen:', e);
+    updateFileStatus('error');
+    toast('⚠ Datei-Speichern fehlgeschlagen');
+  }
+}
+
+async function connectFile() {
+  if (!window.showSaveFilePicker) {
+    toast('⚠ Dein Browser unterstützt die File System API nicht (nutze Chrome/Edge)');
+    return;
+  }
+  try {
+    // Let the user pick or create a JSON file
+    var opts = {
+      suggestedName: 'zeiterfassung.json',
+      types: [{
+        description: 'Zeiterfassung Daten',
+        accept: { 'application/json': ['.json'] }
+      }]
+    };
+    fileHandle = await window.showSaveFilePicker(opts);
+
+    // Try to read existing data from the file
+    try {
+      var file = await fileHandle.getFile();
+      var text = await file.text();
+      if (text && text.trim().length > 2) {
+        var parsed = JSON.parse(text);
+        if (parsed && parsed.projects && parsed.entries) {
+          // Ask user whether to load from file or overwrite
+          var entryCount = parsed.entries.length;
+          var projCount = parsed.projects.length;
+          if (entryCount > 0 || projCount > 0) {
+            var load = confirm(
+              'Datei enthält ' + projCount + ' Projekt(e) und ' +
+              entryCount + ' Einträge.\n\n' +
+              'OK = Daten aus Datei laden\n' +
+              'Abbrechen = Aktuelle Daten in Datei schreiben'
+            );
+            if (load) {
+              D = parsed;
+              localStorage.setItem('zt4', JSON.stringify(D));
+              renderAll();
+              toast('Daten aus Datei geladen (' + entryCount + ' Einträge)');
+            }
+          }
+        }
+      }
+    } catch(readErr) {
+      // File is empty or not yet valid JSON – that's fine, we'll write to it
+    }
+
+    // Save current state to the file
+    await saveToFile();
+    updateFileStatus('connected');
+    document.getElementById('btn-connect').textContent = '\uD83D\uDCC1 Datei wechseln';
+    toast('✓ Datei verbunden – Auto-Save aktiv');
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      console.error('Datei-Verbindung fehlgeschlagen:', e);
+      toast('⚠ Datei konnte nicht verbunden werden');
+    }
+  }
+}
+
+function updateFileStatus(state) {
+  var wrap = document.getElementById('fstatus');
+  var inner = document.getElementById('fstatus-inner');
+  var nameEl = document.getElementById('fstatus-name');
+  wrap.style.display = 'block';
+  inner.className = 'fstatus-inner';
+  if (state === 'connected' || state === 'saved') {
+    inner.classList.add('connected');
+    var fname = fileHandle ? fileHandle.name : 'zeiterfassung.json';
+    nameEl.textContent = '✓ ' + fname;
+  } else if (state === 'saving') {
+    inner.classList.add('saving');
+    nameEl.textContent = '⟳ Speichern…';
+  } else if (state === 'error') {
+    nameEl.textContent = '⚠ Fehler beim Speichern';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function exportJSON() {
+  var json = JSON.stringify(D, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'zeiterfassung_backup_' + todayStr() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Backup gespeichert');
+}
+
+function importJSON(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var parsed = JSON.parse(e.target.result);
+      if (!parsed || !parsed.projects || !parsed.entries) {
+        toast('⚠ Ungültige Datei – keine Zeiterfassungs-Daten gefunden');
+        return;
+      }
+      if (!confirm(
+        'Backup enthält ' + parsed.projects.length + ' Projekt(e) und ' +
+        parsed.entries.length + ' Einträge.\n\n' +
+        'Aktuelle Daten werden ersetzt. Fortfahren?'
+      )) return;
+      D = parsed;
+      saveD();
+      renderAll();
+      toast('Backup geladen (' + D.entries.length + ' Einträge)');
+    } catch(err) {
+      toast('⚠ Datei konnte nicht gelesen werden');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // reset so same file can be re-imported
+}
+
+function genId(prefix) { return prefix + Date.now() + Math.random().toString(36).slice(2,7); }
+function getP(id) { return D.projects.find(p => p.id === id) || null; }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+/* ═══════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════ */
+document.getElementById('tdate').value = todayStr();
+document.getElementById('mdate').value = todayStr();
+
+// live clock in header
+setInterval(function() {
+  document.getElementById('hclock').textContent = new Date().toTimeString().slice(0, 8);
+}, 500);
+
+renderAll();
+
+/* ═══════════════════════════════════════════
+   TIMER LOGIC
+═══════════════════════════════════════════ */
+function elapsedMs() {
+  if (TM.state === 'running') {
+    return TM.accMs + (Date.now() - TM.segStart);
+  }
+  return TM.accMs;
+}
+
+function fmtMs(ms) {
+  var totalSec = Math.floor(ms / 1000);
+  var h = Math.floor(totalSec / 3600);
+  var m = Math.floor((totalSec % 3600) / 60);
+  var s = totalSec % 60;
+  return pad(h) + ':' + pad(m) + ':' + pad(s);
+}
+
+function updateElapsedDisplay() {
+  document.getElementById('elapsed').textContent = fmtMs(elapsedMs());
+}
+
+function setTimerUI() {
+  var idle    = TM.state === 'idle';
+  var running = TM.state === 'running';
+  var paused  = TM.state === 'paused';
+
+  document.getElementById('btn-start').disabled = running;
+  document.getElementById('btn-start').textContent = paused ? '\u25BA Fortsetzen' : '\u25BA Starten';
+  document.getElementById('btn-pause').disabled = !running;
+  document.getElementById('btn-save').disabled  = idle;
+  document.getElementById('btn-disc').disabled  = idle;
+
+  // Lock project selector while timer is active
+  document.getElementById('tproj').disabled = !idle;
+
+  document.getElementById('elapsed').className = running ? 'on' : '';
+  document.getElementById('hdot').className = 'hdot' + (running ? ' on' : '');
+
+  var p = TM.projectId ? getP(TM.projectId) : null;
+  document.getElementById('stxt').textContent =
+    running ? ('Läuft \u2026' + (p ? ' [' + p.name + ']' : '')) :
+    paused  ? ('Pausiert \u2013 Zeit steht' + (p ? ' [' + p.name + ']' : '')) :
+              'Bereit';
+}
+
+function timerStart() {
+  if (TM.state === 'running') return;
+  var projId = document.getElementById('tproj').value;
+  if (!projId) { toast('Bitte zuerst ein Projekt wählen'); return; }
+
+  // If a different project is already loaded in the timer, block it
+  if (TM.state !== 'idle' && TM.projectId !== projId) {
+    toast('⚠ Bitte erst den laufenden Timer speichern oder verwerfen!');
+    // Switch select back to the locked project
+    document.getElementById('tproj').value = TM.projectId;
+    onProjChange();
+    return;
+  }
+
+  if (TM.state === 'idle') {
+    TM.firstStart = Date.now();
+    TM.projectId = projId;
+  }
+  TM.segStart = Date.now();
+  TM.state = 'running';
+  setTimerUI();
+
+  TM.iv = setInterval(function() {
+    updateElapsedDisplay();
+  }, 500);
+}
+
+function timerPause() {
+  if (TM.state !== 'running') return;
+  clearInterval(TM.iv);
+  TM.accMs += Date.now() - TM.segStart;
+  TM.segStart = 0;
+  TM.state = 'paused';
+  setTimerUI();
+  updateElapsedDisplay();
+}
+
+function timerSave() {
+  if (TM.state === 'idle') return;
+  if (TM.state === 'running') {
+    clearInterval(TM.iv);
+    TM.accMs += Date.now() - TM.segStart;
+    TM.state = 'paused';
+  }
+  var totalSec = Math.floor(TM.accMs / 1000);
+  if (totalSec < 5) { toast('Zu kurz – Timer nochmal starten'); return; }
+
+  var now = new Date();
+  var first = new Date(TM.firstStart);
+
+  D.entries.unshift({
+    id: genId('e'),
+    projectId: TM.projectId,  // always use the locked project
+    date: document.getElementById('tdate').value || todayStr(),
+    desc: document.getElementById('tdesc').value.trim() || '(kein Titel)',
+    start: pad(first.getHours()) + ':' + pad(first.getMinutes()),
+    end:   pad(now.getHours())   + ':' + pad(now.getMinutes()),
+    durationSec: totalSec
+  });
+  saveD();
+  doReset();
+  renderAll();
+  toast('Eintrag gespeichert');
+}
+
+function timerDiscard() {
+  if (TM.state === 'idle') return;
+  if (!confirm('Gemessene Zeit verwerfen?')) return;
+  doReset();
+}
+
+function doReset() {
+  clearInterval(TM.iv);
+  TM = { state: 'idle', projectId: null, segStart: 0, firstStart: 0, accMs: 0, iv: null };
+  document.getElementById('elapsed').textContent = '00:00:00';
+  document.getElementById('tdesc').value = '';
+  setTimerUI();
+}
+
+/* ═══════════════════════════════════════════
+   MANUAL ENTRY
+═══════════════════════════════════════════ */
+function toggleManual() { document.getElementById('mform').classList.toggle('open'); }
+
+function manualSave() {
+  var pId = document.getElementById('mproj').value;
+  if (!pId) { toast('Bitte Projekt wählen'); return; }
+  var raw = document.getElementById('mdur').value.trim();
+  var sec = 0;
+  if (raw.indexOf(':') !== -1) {
+    var parts = raw.split(':');
+    sec = (parseInt(parts[0], 10) || 0) * 3600 + (parseInt(parts[1], 10) || 0) * 60;
+  } else {
+    sec = Math.round(parseFloat(raw) * 3600);
+  }
+  if (!sec || sec <= 0) { toast('Bitte gültige Dauer eingeben (z.B. 2:30)'); return; }
+
+  D.entries.unshift({
+    id: genId('e'),
+    projectId: pId,
+    date: document.getElementById('mdate').value || todayStr(),
+    desc: document.getElementById('mdesc').value.trim() || '(kein Titel)',
+    start: '—', end: '—',
+    durationSec: sec
+  });
+  saveD();
+  document.getElementById('mdesc').value = '';
+  document.getElementById('mdur').value = '';
+  renderAll();
+  toast('Manueller Eintrag gespeichert');
+}
+
+/* ═══════════════════════════════════════════
+   PROJECT MODAL
+═══════════════════════════════════════════ */
+function openNewProj() {
+  editProjId = null;
+  chosenColor = COLORS[0];
+  document.getElementById('mod-name').value = '';
+  document.getElementById('mod-hpd').value = '8';
+  document.getElementById('modttl').textContent = '— Neues Projekt';
+  document.getElementById('mod-save').textContent = 'Anlegen';
+  renderCpick();
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(function() { document.getElementById('mod-name').focus(); }, 60);
+}
+
+function openEditProj(id) {
+  var p = getP(id); if (!p) return;
+  editProjId = id; chosenColor = p.color;
+  document.getElementById('mod-name').value = p.name;
+  document.getElementById('mod-hpd').value = p.hpd || 8;
+  document.getElementById('modttl').textContent = '— Projekt bearbeiten';
+  document.getElementById('mod-save').textContent = 'Speichern';
+  renderCpick();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function renderCpick() {
+  document.getElementById('cpick').innerHTML = COLORS.map(function(c) {
+    return '<div class="copt' + (c === chosenColor ? ' on' : '') + '" style="background:' + c + '" onclick="pickColor(\'' + c + '\')"></div>';
+  }).join('');
+}
+
+function pickColor(c) { chosenColor = c; renderCpick(); }
+
+function saveProj() {
+  var name = document.getElementById('mod-name').value.trim();
+  if (!name) { toast('Bitte Projektname eingeben'); return; }
+  var hpd = parseFloat(document.getElementById('mod-hpd').value) || 8;
+  if (editProjId) {
+    var p = getP(editProjId);
+    if (p) { p.name = name; p.color = chosenColor; p.hpd = hpd; }
+  } else {
+    var np = { id: genId('p'), name: name, color: chosenColor, hpd: hpd };
+    D.projects.push(np);
+    D.sel = np.id;
+  }
+  saveD(); closeModal(); renderAll();
+  toast(editProjId ? 'Projekt aktualisiert' : 'Projekt angelegt');
+}
+
+function deleteProj(id) {
+  var p = getP(id);
+  if (!p) return;
+  var entryCount = D.entries.filter(function(e) { return e.projectId === id; }).length;
+
+  // Show inline confirmation instead of browser confirm()
+  var existing = document.getElementById('delete-confirm-bar');
+  if (existing) existing.remove();
+
+  var bar = document.createElement('div');
+  bar.id = 'delete-confirm-bar';
+  bar.style.cssText = 'background:#2a0e0e;border:1px solid var(--red);border-radius:5px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;';
+  bar.innerHTML =
+    '<span style="flex:1;font-size:13px;color:#ffaaaa;">⚠ Projekt <strong style="color:#fff">"' + esc(p.name) + '"</strong> und alle <strong style="color:#fff">' + entryCount + ' Einträge</strong> unwiderruflich löschen?</span>' +
+    '<button class="btn btn-sm" style="background:var(--red);color:#fff;border-color:var(--red)" onclick="confirmDeleteProj(\'' + id + '\')">Ja, endgültig löschen</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'delete-confirm-bar\').remove()">Abbrechen</button>';
+
+  var detail = document.getElementById('projdetail');
+  detail.insertBefore(bar, detail.firstChild);
+}
+
+function confirmDeleteProj(id) {
+  var bar = document.getElementById('delete-confirm-bar');
+  if (bar) bar.remove();
+  D.projects = D.projects.filter(function(p) { return p.id !== id; });
+  D.entries  = D.entries.filter(function(e) { return e.projectId !== id; });
+  if (D.sel === id) D.sel = D.projects.length ? D.projects[0].id : null;
+  saveD(); renderAll();
+  toast('Projekt gelöscht');
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+
+/* ═══════════════════════════════════════════
+   TABS / NAVIGATION
+═══════════════════════════════════════════ */
+function selectProj(id) {
+  D.sel = id; saveD();
+  renderSidebar(); renderProjDetail();
+  document.getElementById('tproj').value = id;
+  onProjChange();
+}
+
+function showTab(t) {
+  activeTab = t;
+  ['proj','log'].forEach(function(n) {
+    document.getElementById('panel-'+n).classList.toggle('on', n === t);
+    document.getElementById('tab-'+n).classList.toggle('on', n === t);
+  });
+  if (t === 'proj') renderProjDetail();
+  if (t === 'log')  renderLog();
+}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function renderAll() {
+  renderSidebar();
+  renderSelects();
+  renderSummary();
+  if (activeTab === 'proj') renderProjDetail();
+  if (activeTab === 'log')  renderLog();
+}
+
+function renderSidebar() {
+  var el = document.getElementById('plist');
+  if (!D.projects.length) {
+    el.innerHTML = '<div style="color:var(--mut);font-size:12px;padding:4px 8px">Noch keine Projekte</div>';
+    return;
+  }
+  el.innerHTML = D.projects.map(function(p) {
+    var sec = D.entries.filter(function(e) { return e.projectId === p.id; })
+                       .reduce(function(a, e) { return a + e.durationSec; }, 0);
+    return '<div class="pitem' + (D.sel === p.id ? ' sel' : '') + '" onclick="selectProj(\'' + p.id + '\')">' +
+      '<div class="pdot" style="background:' + p.color + '"></div>' +
+      '<div class="pname">' + esc(p.name) + '</div>' +
+      '<div class="phrs">' + fmtSec(sec) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderSelects() {
+  var opts = D.projects.length
+    ? D.projects.map(function(p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join('')
+    : '<option value="">— Kein Projekt —</option>';
+  ['tproj','mproj'].forEach(function(id) {
+    var sel = document.getElementById(id);
+    var cur = sel.value;
+    sel.innerHTML = opts;
+    if (D.projects.find(function(p) { return p.id === cur; })) sel.value = cur;
+    else if (D.sel) sel.value = D.sel;
+  });
+  onProjChange();
+}
+
+function onProjChange() {
+  var p = getP(document.getElementById('tproj').value);
+  document.getElementById('pseldot').style.background = p ? p.color : 'transparent';
+}
+
+function renderSummary() {
+  var t = todayStr(), now = new Date();
+  var ws = new Date(now);
+  ws.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+  var wStr = ws.toISOString().slice(0, 10);
+  var td = 0, wk = 0, all = 0;
+  D.entries.forEach(function(e) {
+    all += e.durationSec;
+    if (e.date === t) td += e.durationSec;
+    if (e.date >= wStr) wk += e.durationSec;
+  });
+  document.getElementById('s-today').textContent = fmtSec(td);
+  document.getElementById('s-week').textContent  = fmtSec(wk);
+  document.getElementById('s-all').textContent   = fmtSec(all);
+  document.getElementById('s-cnt').textContent   = D.entries.length;
+}
+
+function renderProjDetail() {
+  var el = document.getElementById('projdetail');
+  var p = getP(D.sel);
+  if (!p) {
+    el.innerHTML = '<div class="empty">Kein Projekt gewählt – links auswählen oder neu anlegen.</div>';
+    return;
+  }
+  var entries = D.entries.filter(function(e) { return e.projectId === p.id; });
+  var totalSec = entries.reduce(function(a, e) { return a + e.durationSec; }, 0);
+  var hpd = p.hpd || 8;
+  var manDays = (totalSec / 3600 / hpd);
+
+  // group by date
+  var byDate = {};
+  entries.forEach(function(e) {
+    if (!byDate[e.date]) byDate[e.date] = [];
+    byDate[e.date].push(e);
+  });
+  var dates = Object.keys(byDate).sort(function(a,b) { return b < a ? -1 : 1; });
+  var wDays = dates.length;
+  var avgSec = wDays ? Math.round(totalSec / wDays) : 0;
+
+  var html = '<div class="ph">' +
+    '<div class="pdot" style="background:' + p.color + ';width:14px;height:14px;border-radius:50%"></div>' +
+    '<div class="ptitle">' + esc(p.name) + '</div>' +
+    '<div style="flex:1"></div>' +
+    '<button class="btn btn-ghost btn-sm" onclick="openEditProj(\'' + p.id + '\')">&#9998; Bearbeiten</button>' +
+    '<button class="btn btn-danger btn-sm" onclick="deleteProj(\'' + p.id + '\')">&#215; Löschen</button>' +
+  '</div>' +
+
+  '<div class="pstats">' +
+    '<div class="pstat"><div class="pstlbl">Gesamtzeit</div>' +
+      '<div class="pstval" style="color:var(--acc)">' + fmtSec(totalSec) + '</div>' +
+      '<div class="pstsub">' + (totalSec/3600).toFixed(2) + ' h gesamt</div></div>' +
+    '<div class="pstat"><div class="pstlbl">Manntage (à ' + hpd + 'h)</div>' +
+      '<div class="pstval" style="color:var(--grn)">' + manDays.toFixed(2) + ' MT</div>' +
+      '<div class="pstsub">' + wDays + ' Arbeitstag' + (wDays !== 1 ? 'e' : '') + ' &middot; ' + entries.length + ' Einträge</div></div>' +
+    '<div class="pstat"><div class="pstlbl">&#216; pro Arbeitstag</div>' +
+      '<div class="pstval">' + (wDays ? fmtSec(avgSec) : '—') + '</div>' +
+      '<div class="pstsub">' + (wDays ? (avgSec/3600/hpd).toFixed(2) + ' MT/Tag' : 'noch keine Daten') + '</div></div>' +
+  '</div>' +
+
+  '<div class="twrap"><div class="thdr"><div class="thdrtxt">Tagesweise Aufschlüsselung</div></div>';
+
+  if (!entries.length) {
+    html += '<div class="empty">Noch keine Einträge – Timer starten oder manuell hinzufügen.</div>';
+  } else {
+    html += '<table><thead><tr><th>Datum</th><th>Beschreibung</th><th>Start</th><th>Ende</th><th>Dauer</th><th>Tages-&#931; / MT</th><th></th></tr></thead><tbody>';
+
+    dates.forEach(function(date) {
+      var de = byDate[date];
+      var dsec = de.reduce(function(a,e) { return a + e.durationSec; }, 0);
+      var dmt  = (dsec / 3600 / hpd).toFixed(2);
+
+      html += '<tr class="dayhdr">' +
+        '<td><span class="dayhdr-lbl">' + fmtDate(date) + '</span></td>' +
+        '<td colspan="3"></td>' +
+        '<td><span class="daysum">' + fmtSec(dsec) + '</span><span class="daymt">' + dmt + ' MT</span></td>' +
+        '<td colspan="2"></td></tr>';
+
+      de.forEach(function(e) {
+        html += '<tr>' +
+          '<td class="tmono" style="padding-left:28px;font-size:11px;color:var(--mut)">&nbsp;</td>' +
+          '<td>' + esc(e.desc) + '</td>' +
+          '<td class="tmono">' + e.start + '</td>' +
+          '<td class="tmono">' + e.end + '</td>' +
+          '<td class="tdur">' + fmtSec(e.durationSec) + '</td>' +
+          '<td class="tmono" style="color:var(--mut)">' + (e.durationSec/3600/hpd).toFixed(2) + ' MT</td>' +
+          '<td><button class="delbtn" onclick="delEntry(\'' + e.id + '\')">&#215;</button></td></tr>';
+      });
+    });
+
+    // totals row
+    html += '<tr style="border-top:2px solid var(--brd)">' +
+      '<td colspan="4" style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--mut);text-align:right;letter-spacing:.08em;text-transform:uppercase">Gesamt</td>' +
+      '<td class="tdur" style="font-size:15px">' + fmtSec(totalSec) + '</td>' +
+      '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:13px;color:var(--grn);font-weight:500">' + manDays.toFixed(2) + ' MT</td>' +
+      '<td></td></tr>';
+
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderLog() {
+  var filter = (document.getElementById('logfilter').value || '').toLowerCase();
+  var entries = D.entries.filter(function(e) {
+    return e.desc.toLowerCase().indexOf(filter) !== -1 ||
+           ((getP(e.projectId) || {}).name || '').toLowerCase().indexOf(filter) !== -1;
+  });
+  var body = document.getElementById('logbody');
+  var empty = document.getElementById('logempty');
+  if (!entries.length) { body.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  body.innerHTML = entries.map(function(e) {
+    var p = getP(e.projectId);
+    return '<tr>' +
+      '<td class="tmono">' + fmtDate(e.date) + '</td>' +
+      '<td><div style="display:flex;align-items:center;gap:8px">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:' + (p ? p.color : '#888') + ';flex-shrink:0"></div>' +
+        esc((p || {}).name || '—') + '</div></td>' +
+      '<td>' + esc(e.desc) + '</td>' +
+      '<td class="tmono">' + e.start + '</td>' +
+      '<td class="tmono">' + e.end + '</td>' +
+      '<td class="tdur">' + fmtSec(e.durationSec) + '</td>' +
+      '<td><button class="delbtn" onclick="delEntry(\'' + e.id + '\')">&#215;</button></td></tr>';
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════ */
+function delEntry(id) { D.entries = D.entries.filter(function(e) { return e.id !== id; }); saveD(); renderAll(); }
+function clearAll() { if (!confirm('Alle Einträge löschen?')) return; D.entries = []; saveD(); renderAll(); }
+
+function exportCSV() {
+  if (!D.entries.length) { toast('Keine Einträge'); return; }
+  var rows = [['Datum','Projekt','Beschreibung','Start','Ende','Dauer','Stunden','Manntage']];
+  D.entries.forEach(function(e) {
+    var p = getP(e.projectId), hpd = p ? (p.hpd || 8) : 8;
+    rows.push([e.date, '"' + (p ? p.name : '') + '"', '"' + e.desc + '"',
+      e.start, e.end, fmtSec(e.durationSec),
+      (e.durationSec/3600).toFixed(2), (e.durationSec/3600/hpd).toFixed(3)]);
+  });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF' + rows.map(function(r) { return r.join(','); }).join('\n')], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'zeiterfassung_' + todayStr() + '.csv';
+  a.click();
+  toast('CSV exportiert');
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function fmtSec(s) {
+  var h = Math.floor(s / 3600);
+  var m = Math.floor((s % 3600) / 60);
+  var sec = s % 60;
+  return pad(h) + ':' + pad(m) + ':' + pad(sec);
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  var parts = d.split('-');
+  return parts[2] + '.' + parts[1] + '.' + parts[0];
+}
+function pad(n) { return ('0' + n).slice(-2); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+</script>
+</body>
+</html>

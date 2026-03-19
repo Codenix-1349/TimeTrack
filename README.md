@@ -1,4 +1,11 @@
+Hier ist die **komplett überarbeitete README** — mit
 
+* **gleicher Bildgröße**
+* **richtiger Reihenfolge**: erst **Standard View**, dann **New Project View**
+* sauberer, ruhiger Optik
+* direkt **fertig zum Copy-Paste**
+
+````md
 # Zeiterfassung
 
 A browser-based time tracking app for managing projects, tracking work sessions, and exporting timesheet data.
@@ -7,7 +14,25 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="HTML5" title="HTML5" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" />&nbsp;&nbsp;
   <img alt="CSS3" title="CSS3" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" />&nbsp;&nbsp;
   <img alt="JavaScript" title="JavaScript" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" />&nbsp;&nbsp;
+  <img alt="Chrome" title="Chrome / File System Access API" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" />&nbsp;&nbsp;
+  <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
 </p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Single--File-App-111827?style=for-the-badge" alt="Single File App" />
+  <img src="https://img.shields.io/badge/Local--First-166534?style=for-the-badge" alt="Local First" />
+  <img src="https://img.shields.io/badge/JSON%20%2B%20CSV-Export-1d4ed8?style=for-the-badge" alt="JSON and CSV Export" />
+  <img src="https://img.shields.io/badge/No%20Backend-Required-6d28d9?style=for-the-badge" alt="No Backend Required" />
+</p>
+
+---
+
+## Overview
+
+Zeiterfassung is a lightweight local-first time tracking app built as a standalone browser application.  
+It helps you manage projects, record work sessions, add manual entries, review totals, and export your data without requiring a backend or external service.
+
+---
 
 ## Features
 
@@ -25,31 +50,45 @@ A browser-based time tracking app for managing projects, tracking work sessions,
 - Optional file-based auto-save via File System Access API
 - Responsive single-page layout
 
+---
+
 ## Screenshots
 
-### Timer Dashboard
+### Standard View
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/351bf2b0-edff-4075-9fec-0bc93a024ce5" alt="Zeiterfassung Timer Dashboard" width="760" />
+  <img
+    src="https://github.com/user-attachments/assets/2c1361b5-5dd5-44a6-a4fe-71bbb410e521"
+    alt="Zeiterfassung Standard View"
+    width="920"
+  />
 </p>
 
 <p align="center">
   <em>
-    Clean timer-focused workflow with project selection, task description, date input, and quick actions for starting, pausing, saving, or discarding tracked sessions.
+    Main workspace with project overview, timer section, entry management, totals, and export/backup actions in a clean local-first dashboard.
   </em>
 </p>
 
-### Project Overview & Work Log
+<br>
+
+### New Project View
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2c1361b5-5dd5-44a6-a4fe-71bbb410e521" alt="Zeiterfassung Project Overview and Work Log" width="1000" />
+  <img
+    src="https://github.com/user-attachments/assets/351bf2b0-edff-4075-9fec-0bc93a024ce5"
+    alt="Zeiterfassung New Project View"
+    width="920"
+  />
 </p>
 
 <p align="center">
   <em>
-    Structured workspace for managing projects, reviewing logged entries, checking totals, and using backup/export actions in a practical local-first time tracking setup.
+    Focused project creation flow for adding a new project with custom name, color, and working-day settings before tracking begins.
   </em>
 </p>
+
+---
 
 ## Tech Stack
 
@@ -59,6 +98,8 @@ A browser-based time tracking app for managing projects, tracking work sessions,
 - Browser LocalStorage
 - File System Access API
 - JSON / CSV export
+
+---
 
 ## Getting Started
 
@@ -80,6 +121,8 @@ start Zeiterfassung.html
 ```
 
 Or simply double-click the file in your project folder.
+
+---
 
 ## Usage
 
@@ -105,11 +148,15 @@ Or simply double-click the file in your project folder.
 * Import a JSON backup to restore data
 * Export entries as CSV for spreadsheet usage
 
+---
+
 ## Storage
 
 The app stores data locally in the browser using `localStorage`.
 
 When supported by the browser, you can also connect a JSON file and enable auto-save to disk.
+
+---
 
 ## Browser Support
 
@@ -123,12 +170,16 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 * Firefox
   Local usage works, but file-based auto-save via File System Access API may not be available.
 
+---
+
 ## Project Structure
 
 ```text
 .
 └── Zeiterfassung.html
 ```
+
+---
 
 ## Data Model
 
@@ -157,6 +208,8 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 }
 ```
 
+---
+
 ## Highlights
 
 * Single-file application
@@ -164,6 +217,8 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 * Fast local usage
 * Suitable for personal project tracking and lightweight work logging
 * Easy backup and export workflow
+
+---
 
 ## Notes
 
@@ -173,4 +228,7 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 
 ````
 
-
+**GitHub Repo Description**
+```text
+A browser-based time tracking app with project management, live timer, manual entries, JSON backup/import, CSV export, and local persistence.
+````

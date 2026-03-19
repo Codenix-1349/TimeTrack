@@ -7,6 +7,8 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="HTML5" title="HTML5" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" />&nbsp;&nbsp;
   <img alt="CSS3" title="CSS3" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" />&nbsp;&nbsp;
   <img alt="JavaScript" title="JavaScript" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" />&nbsp;&nbsp;
+  <img alt="Chrome" title="Chrome / File System Access API" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" />&nbsp;&nbsp;
+  <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
 </p>
 
 ## Features
@@ -24,6 +26,32 @@ A browser-based time tracking app for managing projects, tracking work sessions,
 - Local persistence via browser localStorage
 - Optional file-based auto-save via File System Access API
 - Responsive single-page layout
+
+## Screenshots
+
+### Timer Dashboard
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/351bf2b0-edff-4075-9fec-0bc93a024ce5" alt="Zeiterfassung Timer Dashboard" width="760" />
+</p>
+
+<p align="center">
+  <em>
+    Clean timer-focused workflow with project selection, task description, date input, and quick actions for starting, pausing, saving, or discarding tracked sessions.
+  </em>
+</p>
+
+### Project Overview & Work Log
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2c1361b5-5dd5-44a6-a4fe-71bbb410e521" alt="Zeiterfassung Project Overview and Work Log" width="1000" />
+</p>
+
+<p align="center">
+  <em>
+    Structured workspace for managing projects, reviewing logged entries, checking totals, and using backup/export actions in a practical local-first time tracking setup.
+  </em>
+</p>
 
 ## Tech Stack
 
@@ -145,5 +173,6 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 * Clearing browser storage may remove locally saved data
 * File-based persistence depends on browser support for the File System Access API
 
-```
+````
+
 

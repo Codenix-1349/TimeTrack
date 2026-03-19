@@ -1,3 +1,4 @@
+
 # Zeiterfassung
 
 A browser-based time tracking app for managing projects, tracking work sessions, and exporting timesheet data.
@@ -8,6 +9,13 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="JavaScript" title="JavaScript" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" />&nbsp;&nbsp;
   <img alt="Chrome" title="Chrome / File System Access API" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" />&nbsp;&nbsp;
   <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Single--File-App-111827?style=for-the-badge" alt="Single File App" />
+  <img src="https://img.shields.io/badge/Local--First-166534?style=for-the-badge" alt="Local First" />
+  <img src="https://img.shields.io/badge/JSON%20%2B%20CSV-Export-1d4ed8?style=for-the-badge" alt="JSON and CSV Export" />
+  <img src="https://img.shields.io/badge/No%20Backend-Required-6d28d9?style=for-the-badge" alt="No Backend Required" />
 </p>
 
 ---
@@ -41,29 +49,17 @@ It helps you manage projects, record work sessions, add manual entries, review t
 
 ### Standard View
 
-<p align="center">
-  <img src="./assets/standard-view.png" alt="Zeiterfassung Standard View" width="920" />
-</p>
+![Zeiterfassung Standard View](https://github.com/user-attachments/assets/2c1361b5-5dd5-44a6-a4fe-71bbb410e521)
 
-<p align="center">
-  <em>
-    Main workspace with project overview, timer section, entry management, totals, and export and backup actions in a clean local-first dashboard.
-  </em>
-</p>
+*Main workspace with project overview, timer section, entry management, totals, and export and backup actions in a clean local-first dashboard.*
 
 <br>
 
 ### New Project View
 
-<p align="center">
-  <img src="./assets/new-project-view.png" alt="Zeiterfassung New Project View" width="920" />
-</p>
+![Zeiterfassung New Project View](https://github.com/user-attachments/assets/351bf2b0-edff-4075-9fec-0bc93a024ce5)
 
-<p align="center">
-  <em>
-    Focused project creation flow for adding a new project with custom name, color, and working-day settings before tracking begins.
-  </em>
-</p>
+*Focused project creation flow for adding a new project with custom name, color, and working-day settings before tracking begins.*
 
 ---
 
@@ -83,24 +79,11 @@ It helps you manage projects, record work sessions, add manual entries, review t
 ### 1. Clone the repository
 
 ```bash
-git clone git@github.com:Codenix-1349/Zeiterfassung.git
-cd Zeiterfassung
+git clone git@github.com:Codenix-1349/TimeTrack.git
+cd TimeTrack
 ````
 
-### 2. Project structure
-
-Make sure your repository contains the screenshots in this structure:
-
-```text
-Zeiterfassung/
-├── assets/
-│   ├── standard-view.png
-│   └── new-project-view.png
-├── Zeiterfassung.html
-└── README.md
-```
-
-### 3. Open the app
+### 2. Open the app
 
 This project is a standalone browser app, so no installation is required.
 
@@ -166,9 +149,6 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 
 ```text
 .
-├── assets/
-│   ├── standard-view.png
-│   └── new-project-view.png
 └── Zeiterfassung.html
 ```
 
@@ -221,8 +201,3 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 
 ````
 
-
-Wichtig ist jetzt nur noch, dass du die beiden Bilder wirklich so ins Repo legst:
-
-* `assets/standard-view.png`
-* `assets/new-project-view.png`

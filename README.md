@@ -10,13 +10,6 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Single--File-App-111827?style=for-the-badge" alt="Single File App" />
-  <img src="https://img.shields.io/badge/Local--First-166534?style=for-the-badge" alt="Local First" />
-  <img src="https://img.shields.io/badge/JSON%20%2B%20CSV-Export-1d4ed8?style=for-the-badge" alt="JSON and CSV Export" />
-  <img src="https://img.shields.io/badge/No%20Backend-Required-6d28d9?style=for-the-badge" alt="No Backend Required" />
-</p>
-
 ---
 
 ## Overview

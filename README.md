@@ -7,8 +7,6 @@ A browser-based time tracking app for managing projects, tracking work sessions,
   <img alt="HTML5" title="HTML5" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" />&nbsp;&nbsp;
   <img alt="CSS3" title="CSS3" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" />&nbsp;&nbsp;
   <img alt="JavaScript" title="JavaScript" height="36" src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" />&nbsp;&nbsp;
-  <img alt="Chrome" title="Chrome / File System Access API" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" />&nbsp;&nbsp;
-  <img alt="Firefox" title="Firefox / Browser Storage" height="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" />
 </p>
 
 ## Features

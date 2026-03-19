@@ -1,11 +1,3 @@
-Hier ist die **komplett überarbeitete README** — mit
-
-* **gleicher Bildgröße**
-* **richtiger Reihenfolge**: erst **Standard View**, dann **New Project View**
-* sauberer, ruhiger Optik
-* direkt **fertig zum Copy-Paste**
-
-````md
 # Zeiterfassung
 
 A browser-based time tracking app for managing projects, tracking work sessions, and exporting timesheet data.
@@ -57,16 +49,12 @@ It helps you manage projects, record work sessions, add manual entries, review t
 ### Standard View
 
 <p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/2c1361b5-5dd5-44a6-a4fe-71bbb410e521"
-    alt="Zeiterfassung Standard View"
-    width="920"
-  />
+  <img src="./assets/standard-view.png" alt="Zeiterfassung Standard View" width="920" />
 </p>
 
 <p align="center">
   <em>
-    Main workspace with project overview, timer section, entry management, totals, and export/backup actions in a clean local-first dashboard.
+    Main workspace with project overview, timer section, entry management, totals, and export and backup actions in a clean local-first dashboard.
   </em>
 </p>
 
@@ -75,11 +63,7 @@ It helps you manage projects, record work sessions, add manual entries, review t
 ### New Project View
 
 <p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/351bf2b0-edff-4075-9fec-0bc93a024ce5"
-    alt="Zeiterfassung New Project View"
-    width="920"
-  />
+  <img src="./assets/new-project-view.png" alt="Zeiterfassung New Project View" width="920" />
 </p>
 
 <p align="center">
@@ -110,7 +94,20 @@ git clone git@github.com:Codenix-1349/Zeiterfassung.git
 cd Zeiterfassung
 ````
 
-### 2. Open the app
+### 2. Project structure
+
+Make sure your repository contains the screenshots in this structure:
+
+```text
+Zeiterfassung/
+├── assets/
+│   ├── standard-view.png
+│   └── new-project-view.png
+├── Zeiterfassung.html
+└── README.md
+```
+
+### 3. Open the app
 
 This project is a standalone browser app, so no installation is required.
 
@@ -176,6 +173,9 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 
 ```text
 .
+├── assets/
+│   ├── standard-view.png
+│   └── new-project-view.png
 └── Zeiterfassung.html
 ```
 
@@ -228,7 +228,8 @@ When supported by the browser, you can also connect a JSON file and enable auto-
 
 ````
 
-**GitHub Repo Description**
-```text
-A browser-based time tracking app with project management, live timer, manual entries, JSON backup/import, CSV export, and local persistence.
-````
+
+Wichtig ist jetzt nur noch, dass du die beiden Bilder wirklich so ins Repo legst:
+
+* `assets/standard-view.png`
+* `assets/new-project-view.png`
